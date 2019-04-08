@@ -1,0 +1,10 @@
+name: Blackhole
+author: Gober
+api-version: 1.13
+version: 3.0.3
+description: Nothing will pass, even time.
+main: com.gmail.jyckosianjaya.blackhole.Blackhole
+softdepend: [GlowAPI]
+commands:
+      blackhole:
+             usage: /<command>
