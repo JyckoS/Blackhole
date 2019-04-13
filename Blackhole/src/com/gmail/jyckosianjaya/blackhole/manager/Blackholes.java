@@ -86,7 +86,7 @@ public class Blackholes {
 			public void run() {
 				// TODO Auto-generated method stub
 				FallingBlock falling = (FallingBlock) b.getWorld().spawnFallingBlock(b.getLocation(), b.getBlockData());
-				falling.setCustomName("PullX6");
+				falling.setCustomName("PullX" + 20);
 				falling.setGravity(false);
 				falling.setInvulnerable(true);
 				falling.setDropItem(false);

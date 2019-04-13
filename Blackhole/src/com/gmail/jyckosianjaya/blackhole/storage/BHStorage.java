@@ -1,5 +1,6 @@
 package com.gmail.jyckosianjaya.blackhole.storage;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -36,6 +38,10 @@ public class BHStorage {
 		this.m = m;
 		this.m.getConfig().options().copyDefaults(true);
 		this.m.saveConfig();
+		File f = new File(m.getDataFolder(), "blackholes.yml");
+		if (!f.exists()) {
+			this.m.saveResource("blackholes.yml", false);
+		}
 		this.reloadConfig();
 	}
 	public List<String> getTemplates() {
@@ -47,6 +53,7 @@ public class BHStorage {
 	public void reloadConfig() {
 		this.templates.clear();
 		this.m.reloadConfig();
+		YamlConfiguration blackholez = YamlConfiguration.loadConfiguration(new File(m.getDataFolder(), "blackholes.yml"));
 		FileConfiguration config = m.getConfig();
 		this.pull_blocks = config.getBoolean("pull_blocks");
 		this.blacklisted_mat.clear();
@@ -76,7 +83,7 @@ public class BHStorage {
 		meta.setLore(Utility.TransColor(item.getStringList("lore")));
 		blackhole_item.setItemMeta(meta);
 			ignored_entity.clear();
-			ConfigurationSection blackholes = config.getConfigurationSection("blackholes");
+			ConfigurationSection blackholes = blackholez.getConfigurationSection("blackholes");
 			for (String str : config.getStringList("unaffected_entities")) {
 				EntityType ne = null;
 				try {
