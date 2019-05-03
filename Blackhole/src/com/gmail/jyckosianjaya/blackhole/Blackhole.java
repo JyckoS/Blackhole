@@ -28,13 +28,15 @@ public class Blackhole extends JavaPlugin {
 			packetlistenerenabled = true;
 			Utility.sendConsole(prefix + "Detected PacketListenerAPI & GlowAPI. &bGlow hook enabled!");
 		}
+		this.manager.loadAll();
 	}
 	public void Warn(String msg) {
 		getLogger().warning(ChatColor.stripColor(Utility.TransColor(msg)));
 	}
 	@Override
 	public void onDisable() {
-		this.manager.killAll();
+		this.manager.saveAll();
+		this.manager.silentKillAll();
 	}
 	public BHManager getManager() {
 		return this.manager;

@@ -1,4 +1,14 @@
 blackholes:
+    M87Center:
+        duration: -1 #Infinity
+        singularity_damage: 1
+        singularity_radius: 20
+        singularity_pull_power: 0.4
+        gravitational_pull_radius: 50
+        gravitational_pull_power: 0.06
+        evaporation_damage: 1000
+        evaporation_radius: 150
+        evaporation_push_power: 45
     TON618:
         duration: 3600
         singularity_damage: 2

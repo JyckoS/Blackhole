@@ -14,8 +14,9 @@ public class TemplateBlackhole {
 	private double evpr_dmg = 0;
 	private int evpr_radius = 50;
 	private float evpr_push_power = 20f;
+	private String id = "";
 	private String name = "Blackholes";
-	public TemplateBlackhole(int duration, int sing_rad, double sing_dmg, float sing_power, int grvt_rad, float grv_power, double evpr_dmg, int evpr_rad, float evpr_power, String name) {
+	public TemplateBlackhole(int duration, int sing_rad, double sing_dmg, float sing_power, int grvt_rad, float grv_power, double evpr_dmg, int evpr_rad, float evpr_power, String name, String id) {
 		this.duration = duration;
 		this.sing_radius = sing_rad;
 		this.sing_dmg = sing_dmg;
@@ -26,6 +27,10 @@ public class TemplateBlackhole {
 		this.evpr_radius = evpr_rad;
 		this.evpr_push_power = evpr_power;
 		this.name = name;
+		this.id = id;
+	}
+	public String getID() {
+		return this.id;
 	}
 	public String getName() {
 		return this.name;

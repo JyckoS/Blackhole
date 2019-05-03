@@ -1,5 +1,7 @@
 package com.gmail.jyckosianjaya.blackhole.manager;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import java.util.UUID;
@@ -8,6 +10,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -40,7 +44,7 @@ public class BHManager {
 			@Override
 			public void run() {
 				for (World w : Bukkit.getWorlds()) {
-					for (Entity es : w.getEntities()) {
+					for (Entity es : new ArrayList<Entity>(w.getEntities())) {
 						if (es.getType() != EntityType.DROPPED_ITEM) continue;
 						Item item = (Item) es;
 						if (!item.isOnGround()) continue;
@@ -139,7 +143,7 @@ public class BHManager {
 			@Override
 			public void run() {
 				for (Blackholes bh : new ArrayList<Blackholes>(blackholes)) {
-					if (bh.getDuration() <= 0) {
+					if (bh.getDuration() <= 0 && !bh.isInfinite()) {
 						bh.destroy();
 						for (Entity en : bh.getNearbyEntities(bh.getEvaporationRadius(), bh.getEvaporationRadius(), bh.getEvaporationRadius())) {
 							switch (en.getType()) {
@@ -275,9 +279,80 @@ public class BHManager {
 		for (Blackholes bh : new ArrayList<Blackholes>(this.blackholes)) {
 			bh.destroy();}	
 		this.blackholes.clear();}
+	public void createBlackhole(Location loc, UUID owner, TemplateBlackhole template, int dur) {
+		BHStorage strg = this.m.getStorage();
+		this.blackholes.add(new Blackholes(owner, loc, template, dur));
+	}
 	public void createBlackhole(Location loc, UUID owner, TemplateBlackhole template) {
 		BHStorage strg = this.m.getStorage();
 		this.blackholes.add(new Blackholes(owner, loc, template));
+	}
+	public void saveAll() {
+		File f = new File(this.m.getDataFolder(), "cache.yml");
+		if (f.exists()) {
+			f.delete();
+		}
+		try {
+			f.createNewFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		f = new File(this.m.getDataFolder(), "cache.yml");
+		YamlConfiguration yml = YamlConfiguration.loadConfiguration(f);
+		ConfigurationSection cache = yml.createSection("cache");
+		int id = 0;
+		for (Blackholes blk : this.blackholes) {
+			int duration = blk.getDuration();
+			String blackhole_type = blk.getID();
+			String owneruuid = blk.getOwnerUUID().toString();
+			Location loc = blk.getLocation();
+			double x = loc.getX();
+			double y = loc.getY();
+			double z = loc.getZ();
+			String world = loc.getWorld().getName();
+			String location = x + "_" + y + "_" + z + "_" + world;
+			ConfigurationSection sec = cache.createSection(id + "");
+			sec.set("duration", duration);
+			sec.set("type", blackhole_type);
+			sec.set("location", location);
+			sec.set("owner", owneruuid);
+			id++;
+		}
+		try {
+			yml.save(f);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void silentKillAll() {
+		for (Blackholes bh : this.blackholes) {
+			bh.silentKill();
+		}
+		this.blackholes.clear();
+	}
+	public void loadAll() {
+		File f = new File(this.m.getDataFolder(), "cache.yml");
+		if (!f.exists()) return;
+		YamlConfiguration yml = YamlConfiguration.loadConfiguration(f);
+		ConfigurationSection cache = yml.getConfigurationSection("cache");
+		for (String str : cache.getKeys(false)) {
+			ConfigurationSection bh = cache.getConfigurationSection(str);
+			int dur = bh.getInt("duration");
+			String[] loc = bh.getString("location").split("_");
+			double x = Double.parseDouble(loc[0]);
+			double y = Double.parseDouble(loc[1]);
+			double z = Double.parseDouble(loc[2]);
+			World world = Bukkit.getWorld(loc[3]);
+			UUID owner = UUID.fromString(bh.getString("owner"));
+			String type = bh.getString("type");
+			TemplateBlackhole template = this.m.getStorage().getBlackhole(type);
+			if (template == null || world == null) continue;
+			Location locz = new Location(world, x, y, z);
+			this.createBlackhole(locz, owner, template, dur);
+		}
+
 	}
 	/*
 	 * 	protected Blackholes(UUID owner, Location locz, int duration, int sing_rad, double sing_dmg,

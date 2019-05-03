@@ -108,7 +108,7 @@ public class BHStorage {
 				float evpr_pushpwr = Float.valueOf(bhpt.getDouble("evaporation_push_power") + "");
 				int evpr_rad = bhpt.getInt("evaporation_radius");
 				TemplateBlackhole template = new TemplateBlackhole(duration, sing_rad, sing_dmg, sing_pullpwr, grav_rad, grav_pullpwr,
-						evpr_dmg, evpr_rad, evpr_pushpwr, str);
+						evpr_dmg, evpr_rad, evpr_pushpwr, str, str);
 				this.templates.put(str.toLowerCase(), template);
 				loaded++;
 			}

@@ -34,6 +34,7 @@ import com.gmail.jyckosianjaya.blackhole.utils.XSound;
 
 
 public class Blackholes {
+	private String type = "";
 	private int duration = 0;
 	private int sing_radius = 0;
 	private double sing_dmg = 0;
@@ -50,6 +51,7 @@ public class Blackholes {
 	private ArmorStand dummy;
 	private UUID owneruuid;
 	private double currentdummyhead = 0;
+	private Boolean infinite = false;
 	public String getName() {
 		return this.name;
 	}
@@ -99,9 +101,16 @@ public class Blackholes {
 	public void addBlockToPull(Block b) {
 		block_pull.add(b);
 	}
-	protected Blackholes(UUID owner, Location locz, TemplateBlackhole temp) {
+	public String getID() {
+		return this.type;
+	}
+	public UUID getOwnerUUID() {
+		return this.owneruuid;
+	}
+	protected Blackholes(UUID owner, Location locz, TemplateBlackhole temp, int health) {
+		this.type = temp.getID();
 		this.owneruuid = owner;
-		this.duration = temp.getDuration();
+		this.duration = health;
 		this.sing_radius = temp.getSingularityRadius();
 		this.sing_dmg = temp.getSingularityDamage();
 		this.sing_pullpwr = temp.getSingularityPullPower();
@@ -111,6 +120,9 @@ public class Blackholes {
 		this.evpr_radius = temp.getEvaporationRadius();
 		this.evpr_push_power = temp.getEvaporationPushPower();
 		this.loc = locz.clone();
+		if (temp.getDuration() == -1) {
+			this.infinite =  true;
+		}
 		loc = loc.add(0.0, 2.0, 0.0);
 		dummyloc = locz.clone().add(0.0, 0.5, 0.0);
 		dummy = (ArmorStand) loc.getWorld().spawnEntity(dummyloc, EntityType.ARMOR_STAND);
@@ -127,6 +139,45 @@ public class Blackholes {
 
 		block_pull = new ArrayList<Block>(Utility.getBlocks(dummy.getLocation().getBlock(), sing_radius));
 		}
+	}
+	public void silentKill() {
+		dummy.remove();
+	}
+	protected Blackholes(UUID owner, Location locz, TemplateBlackhole temp) {
+		this.type = temp.getID();
+		this.owneruuid = owner;
+		this.duration = temp.getDuration();
+		this.sing_radius = temp.getSingularityRadius();
+		this.sing_dmg = temp.getSingularityDamage();
+		this.sing_pullpwr = temp.getSingularityPullPower();
+		this.grvt_pull_radius = temp.getGravitationalPullRadius();
+		this.grvt_pull_power = temp.getGravitationalPullPower();
+		this.evpr_dmg = temp.getEvaporationDamage();
+		this.evpr_radius = temp.getEvaporationRadius();
+		this.evpr_push_power = temp.getEvaporationPushPower();
+		this.loc = locz.clone();
+		if (temp.getDuration() == -1) {
+			this.infinite =  true;
+		}
+		loc = loc.add(0.0, 2.0, 0.0);
+		dummyloc = locz.clone().add(0.0, 0.5, 0.0);
+		dummy = (ArmorStand) loc.getWorld().spawnEntity(dummyloc, EntityType.ARMOR_STAND);
+		dummy.setVisible(false);
+		dummy.setMarker(true);
+		dummy.setCustomName("blackhole");
+		dummy.setCustomNameVisible(false);
+		dummy.setGravity(false);
+		if (Blackhole.packetlistenerenabled) {
+		GlowAPI.setGlowing(dummy, GlowAPI.Color.BLACK, Bukkit.getOnlinePlayers());}
+		ItemStack coal = new ItemStack(XMaterial.COAL_BLOCK.parseItem());
+		dummy.setHelmet(coal);
+		if (Blackhole.getInstance().getStorage().isBlockPulled()) {
+
+		block_pull = new ArrayList<Block>(Utility.getBlocks(dummy.getLocation().getBlock(), sing_radius));
+		}
+	}
+	public Boolean isInfinite() {
+		return this.infinite;
 	}
 	public List<Entity> getNearbyEntities(double x, double y, double z) {
 		return this.dummy.getNearbyEntities(x, y, z);
