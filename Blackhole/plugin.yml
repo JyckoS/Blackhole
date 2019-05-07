@@ -1,7 +1,7 @@
 name: Blackhole
 author: Gober
 api-version: 1.13
-version: 3.0.7
+version: 3.1.1
 description: Nothing will pass, even time.
 main: com.gmail.jyckosianjaya.blackhole.Blackhole
 softdepend: [GlowAPI]

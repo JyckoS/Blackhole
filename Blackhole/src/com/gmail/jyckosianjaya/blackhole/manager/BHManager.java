@@ -1,6 +1,7 @@
 package com.gmail.jyckosianjaya.blackhole.manager;
 
 import java.io.File;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -8,6 +9,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -31,6 +33,7 @@ import com.gmail.jyckosianjaya.blackhole.utils.XSound;
 import com.gmail.jyckosianjaya.blackhole.utils.nbt.NBTItem;
 
 
+
 public class BHManager {
 	private Blackhole m;
 	private ArrayList<Blackholes> blackholes = new ArrayList<Blackholes>();
@@ -40,6 +43,20 @@ public class BHManager {
 	}
 	public BHManager(Blackhole m) {
 		this.m = m;
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				for (Blackholes bh : blackholes) {
+					bh.updateBlocks();
+				}
+			}
+		}.runTaskTimer(m, m.getStorage().getUpdateInterval(), m.getStorage().getUpdateInterval());
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				saveAll();
+			}
+		}.runTaskTimerAsynchronously(m, 1500L, 1500L);
 		new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -72,6 +89,7 @@ public class BHManager {
 						});
 
 						w.spawnParticle(Particle.CRIT_MAGIC, item.getLocation(), 100);
+						w.spawnParticle(Particle.EXPLOSION_NORMAL, item.getLocation(), 100);
 
 					}
 				}
@@ -99,6 +117,7 @@ public class BHManager {
 							Vector direction = (loc.toVector().subtract(toLocation.toVector())).normalize();
 							en.setVelocity(direction.multiply(bh.getGravitationalPullPower()));
 							w.spawnParticle(Particle.EXPLOSION_NORMAL, en.getLocation(), 1);
+							w.spawnParticle(Particle.ENCHANTMENT_TABLE, en.getLocation(), 3);
 
 						}
 					}
@@ -124,7 +143,7 @@ public class BHManager {
 							//en.teleportAsync(loc);
 							Vector direction = (loc.toVector().subtract(toLocation.toVector())).normalize();
 							en.setVelocity(direction.multiply(bh.getSingularityPullPower()));
-							w.spawnParticle(Particle.LAVA, en.getLocation(), 1);
+							w.spawnParticle(Particle.DRIP_LAVA, en.getLocation(), 1);
 							w.spawnParticle(Particle.EXPLOSION_NORMAL, en.getLocation(), 1);
 
 						}
@@ -133,7 +152,7 @@ public class BHManager {
 					w.spawnParticle(Particle.SMOKE_NORMAL, loc, bh.getGravitationalPullRadius());
 					Float soundradius = Float.valueOf(bh.getGravitationalPullRadius() / 3);
 					Utility.PlaySoundAt(w, loc, XSound.MINECART_INSIDE.bukkitSound(), soundradius, 0.0F);
-					Utility.PlaySoundAt(w, loc, XSound.MINECART_INSIDE.bukkitSound(), soundradius, 0.1F);
+					Utility.PlaySoundAt(w, loc, XSound.MINECART_INSIDE.bukkitSound(), soundradius, 0.2F);
 
 				}
 				
@@ -219,9 +238,12 @@ public class BHManager {
 								}
 								ItemStack item = new ItemStack(fal.getBlockData().getMaterial());
 								item.setAmount(1);
+								Material mat = item.getType();
+								if (mat == Material.AIR) continue;
 								addTask(new BHTask() {
 									@Override
 									public void run() {
+										
 								fal.getWorld().dropItemNaturally(fal.getLocation(), item);}});
 								fal.remove();
 							}
@@ -330,7 +352,10 @@ public class BHManager {
 		for (Blackholes bh : this.blackholes) {
 			bh.silentKill();
 		}
+	}
+	public void cleanAll() {
 		this.blackholes.clear();
+
 	}
 	public void loadAll() {
 		File f = new File(this.m.getDataFolder(), "cache.yml");

@@ -3,6 +3,7 @@ package com.gmail.jyckosianjaya.blackhole;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.gmail.jyckosianjaya.blackhole.commands.BHCmd;
 import com.gmail.jyckosianjaya.blackhole.listener.BHListener;
@@ -28,15 +29,24 @@ public class Blackhole extends JavaPlugin {
 			packetlistenerenabled = true;
 			Utility.sendConsole(prefix + "Detected PacketListenerAPI & GlowAPI. &bGlow hook enabled!");
 		}
-		this.manager.loadAll();
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				manager.loadAll();
+			}
+		}.runTaskLater(this, 2L);
 	}
 	public void Warn(String msg) {
 		getLogger().warning(ChatColor.stripColor(Utility.TransColor(msg)));
 	}
 	@Override
 	public void onDisable() {
+
 		this.manager.saveAll();
 		this.manager.silentKillAll();
+		this.manager.cleanAll();
+
+
 	}
 	public BHManager getManager() {
 		return this.manager;

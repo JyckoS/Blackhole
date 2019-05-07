@@ -1,0 +1,6 @@
+caches:
+   1:
+      type: TON6188
+      location: 12.2-23-23-WORLD
+      owner: 23-fsf4-sf2
+      duration: 50

@@ -6,6 +6,8 @@ deadstar_item:
     material: COAL_BLOCK
 
 pull_blocks: true
+pull_update_interval: 70 #in ticks
+
 unaffected_blocks:
 - "CHEST"
 - "FURNACE"
@@ -19,3 +21,4 @@ unaffected_entities:
 - "WOLF"
 - "OCELOT"
 - "HORSE"
+

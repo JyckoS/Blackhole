@@ -48,7 +48,6 @@ public enum MinecraftVersion {
             return hasGsonSupport;
         }
         try {
-            System.out.println("Found Gson: " + Class.forName("com.google.gson.Gson"));
             hasGsonSupport = true;
         } catch (Exception ex) {
             hasGsonSupport = false;

@@ -211,6 +211,9 @@ public class Blackholes {
 	public int getDuration() {
 		return duration;
 	}
+	public void updateBlocks() {
+		block_pull = new ArrayList<Block>(Utility.getBlocks(dummy.getLocation().getBlock(), sing_radius));
+	}
 	public void spinDummy() {
 		this.currentdummyhead = currentdummyhead + 0.1;
 		dummy.setHeadPose(new EulerAngle(currentdummyhead, currentdummyhead * -1, 0));

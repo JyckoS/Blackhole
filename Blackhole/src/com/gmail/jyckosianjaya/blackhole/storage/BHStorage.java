@@ -34,6 +34,7 @@ public class BHStorage {
 	private int def_evpr_rad = 50;
 	private Float  def_evpr_pushpwr = 20f;
 	
+	private long updateinterval = 70L;
 	public BHStorage(Blackhole m) {
 		this.m = m;
 		this.m.getConfig().options().copyDefaults(true);
@@ -50,12 +51,17 @@ public class BHStorage {
 	public boolean isBlockPulled() {
 		return this.pull_blocks;
 	}
+	public final long getUpdateInterval() {
+		return this.updateinterval;
+	}
 	public void reloadConfig() {
 		this.templates.clear();
 		this.m.reloadConfig();
+		this.templates.clear();
 		YamlConfiguration blackholez = YamlConfiguration.loadConfiguration(new File(m.getDataFolder(), "blackholes.yml"));
 		FileConfiguration config = m.getConfig();
 		this.pull_blocks = config.getBoolean("pull_blocks");
+		this.updateinterval = config.getLong("pull_update_interval");
 		this.blacklisted_mat.clear();
 		ConfigurationSection item = config.getConfigurationSection("deadstar_item");
 		Material mat = null;
